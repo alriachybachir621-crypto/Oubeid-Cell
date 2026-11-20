@@ -1,0 +1,163 @@
+{
+  "entities": {
+    "ShopConfig": {
+      "title": "ShopConfig",
+      "description": "Global storefront configuration, hero content, contact details, and social links.",
+      "type": "object",
+      "properties": {
+        "heroTitleEn": { "type": "string", "maxLength": 160 },
+        "heroTitleAr": { "type": "string", "maxLength": 160 },
+        "heroSubtitleEn": { "type": "string", "maxLength": 320 },
+        "heroSubtitleAr": { "type": "string", "maxLength": 320 },
+        "heroImages": { "type": "array" },
+        "whatsappNumber": { "type": "string", "maxLength": 30 },
+        "phoneDisplay": { "type": "string", "maxLength": 30 },
+        "hoursEn": { "type": "string", "maxLength": 80 },
+        "hoursAr": { "type": "string", "maxLength": 80 },
+        "addressEn": { "type": "string", "maxLength": 160 },
+        "addressAr": { "type": "string", "maxLength": 160 },
+        "mapsEmbedUrl": { "type": "string", "maxLength": 600 },
+        "mapsLink": { "type": "string", "maxLength": 600 },
+        "facebookUrl": { "type": "string", "maxLength": 300 },
+        "facebookHandle": { "type": "string", "maxLength": 80 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["heroTitleEn", "heroTitleAr", "whatsappNumber", "phoneDisplay"]
+    },
+    "AdminStatus": {
+      "title": "AdminStatus",
+      "description": "One-time flag indicating whether the shop manager PIN account has been initialized.",
+      "type": "object",
+      "properties": {
+        "initialized": { "type": "boolean" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["initialized"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Smartphone or accessory listed in the Oubeid Cell catalog.",
+      "type": "object",
+      "properties": {
+        "nameEn": { "type": "string", "maxLength": 140 },
+        "nameAr": { "type": "string", "maxLength": 140 },
+        "brand": { "type": "string", "enum": ["Samsung", "iPhone", "Huawei", "Xiaomi", "Other"] },
+        "category": { "type": "string", "enum": ["phone", "case", "charger", "cable", "earbuds", "screen_protector", "accessory"] },
+        "priceUsd": { "type": "number" },
+        "oldPriceUsd": { "type": "number" },
+        "condition": { "type": "string", "enum": ["new", "used"] },
+        "storageOptions": { "type": "array" },
+        "colorOptions": { "type": "array" },
+        "images": { "type": "array" },
+        "inStock": { "type": "boolean" },
+        "isNewArrival": { "type": "boolean" },
+        "isOnSale": { "type": "boolean" },
+        "gulfSpec": { "type": "boolean" },
+        "descriptionEn": { "type": "string", "maxLength": 800 },
+        "descriptionAr": { "type": "string", "maxLength": 800 },
+        "artworkKey": { "type": "string", "maxLength": 60 },
+        "sortOrder": { "type": "number" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["nameEn", "nameAr", "brand", "category", "priceUsd", "condition", "inStock"]
+    },
+    "ServiceItem": {
+      "title": "ServiceItem",
+      "description": "Quick service card displayed on the storefront that opens WhatsApp.",
+      "type": "object",
+      "properties": {
+        "titleEn": { "type": "string", "maxLength": 100 },
+        "titleAr": { "type": "string", "maxLength": 100 },
+        "descriptionEn": { "type": "string", "maxLength": 240 },
+        "descriptionAr": { "type": "string", "maxLength": 240 },
+        "icon": { "type": "string", "maxLength": 40 },
+        "whatsappMessageEn": { "type": "string", "maxLength": 400 },
+        "whatsappMessageAr": { "type": "string", "maxLength": 400 },
+        "accent": { "type": "string", "enum": ["default", "touch", "alfa"] },
+        "sortOrder": { "type": "number" }
+      },
+      "required": ["titleEn", "titleAr", "descriptionEn", "descriptionAr", "icon", "whatsappMessageEn", "whatsappMessageAr"]
+    },
+    "TelecomPlan": {
+      "title": "TelecomPlan",
+      "description": "Touch or Alfa line or recharge top-up option with USD price.",
+      "type": "object",
+      "properties": {
+        "carrier": { "type": "string", "enum": ["touch", "alfa"] },
+        "type": { "type": "string", "enum": ["line", "topup"] },
+        "titleEn": { "type": "string", "maxLength": 120 },
+        "titleAr": { "type": "string", "maxLength": 120 },
+        "subtitleEn": { "type": "string", "maxLength": 200 },
+        "subtitleAr": { "type": "string", "maxLength": 200 },
+        "priceUsd": { "type": "number" },
+        "inStock": { "type": "boolean" },
+        "sortOrder": { "type": "number" }
+      },
+      "required": ["carrier", "type", "titleEn", "titleAr", "priceUsd", "inStock"]
+    },
+    "RepairItem": {
+      "title": "RepairItem",
+      "description": "Repair service category such as screen, battery, charging port, or software.",
+      "type": "object",
+      "properties": {
+        "titleEn": { "type": "string", "maxLength": 100 },
+        "titleAr": { "type": "string", "maxLength": 100 },
+        "descriptionEn": { "type": "string", "maxLength": 260 },
+        "descriptionAr": { "type": "string", "maxLength": 260 },
+        "icon": { "type": "string", "maxLength": 40 },
+        "startingPriceEn": { "type": "string", "maxLength": 60 },
+        "startingPriceAr": { "type": "string", "maxLength": 60 },
+        "whatsappMessageEn": { "type": "string", "maxLength": 400 },
+        "whatsappMessageAr": { "type": "string", "maxLength": 400 },
+        "sortOrder": { "type": "number" }
+      },
+      "required": ["titleEn", "titleAr", "descriptionEn", "descriptionAr", "icon"]
+    },
+    "GalleryItem": {
+      "title": "GalleryItem",
+      "description": "Storefront gallery item linked to the shop showcase and Facebook page.",
+      "type": "object",
+      "properties": {
+        "titleEn": { "type": "string", "maxLength": 100 },
+        "titleAr": { "type": "string", "maxLength": 100 },
+        "captionEn": { "type": "string", "maxLength": 200 },
+        "captionAr": { "type": "string", "maxLength": 200 },
+        "imageUrl": { "type": "string", "maxLength": 600 },
+        "artworkKey": { "type": "string", "maxLength": 60 },
+        "tag": { "type": "string", "enum": ["shop", "repair", "devices", "accessories"] },
+        "sortOrder": { "type": "number" }
+      },
+      "required": ["titleEn", "titleAr", "tag"]
+    }
+  },
+  "firestore": {
+    "/shop_config/{configId}": {
+      "schema": { "$ref": "#/entities/ShopConfig" },
+      "description": "Publicly readable shop configuration; writable only by admin."
+    },
+    "/app_meta/{metaId}": {
+      "schema": { "$ref": "#/entities/AdminStatus" },
+      "description": "Publicly readable setup flag; writable only by admin."
+    },
+    "/products/{productId}": {
+      "schema": { "$ref": "#/entities/Product" },
+      "description": "Publicly readable product catalog; writable only by admin."
+    },
+    "/services/{serviceId}": {
+      "schema": { "$ref": "#/entities/ServiceItem" },
+      "description": "Publicly readable quick services; writable only by admin."
+    },
+    "/telecom_plans/{planId}": {
+      "schema": { "$ref": "#/entities/TelecomPlan" },
+      "description": "Publicly readable Touch & Alfa lines and top-ups; writable only by admin."
+    },
+    "/repairs/{repairId}": {
+      "schema": { "$ref": "#/entities/RepairItem" },
+      "description": "Publicly readable repair services; writable only by admin."
+    },
+    "/gallery_items/{itemId}": {
+      "schema": { "$ref": "#/entities/GalleryItem" },
+      "description": "Publicly readable gallery showcase items; writable only by admin."
+    }
+  }
+}

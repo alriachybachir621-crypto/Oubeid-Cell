@@ -1,0 +1,212 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function isAdmin() {
+      return request.auth != null && request.auth.token.email == 'admin@oubeidcell.app';
+    }
+
+    function isOptionalString(data, field, maxLen) {
+      return !(field in data) || (data[field] is string && data[field].size() <= maxLen);
+    }
+
+    function isOptionalNumber(data, field) {
+      return !(field in data) || (data[field] is number && data[field] >= 0);
+    }
+
+    function isOptionalBool(data, field) {
+      return !(field in data) || (data[field] is bool);
+    }
+
+    function isBoundedStringList(data, field, maxItems) {
+      return !(field in data) || (
+        data[field] is list &&
+        data[field].size() <= maxItems &&
+        (data[field].size() == 0 || data[field][0] is string)
+      );
+    }
+
+    function isValidShopConfig(data) {
+      return data.keys().hasAll(['heroTitleEn', 'heroTitleAr', 'whatsappNumber', 'phoneDisplay']) &&
+        data.keys().hasOnly([
+          'heroTitleEn', 'heroTitleAr', 'heroSubtitleEn', 'heroSubtitleAr',
+          'heroImages', 'whatsappNumber', 'phoneDisplay', 'hoursEn', 'hoursAr',
+          'addressEn', 'addressAr', 'mapsEmbedUrl', 'mapsLink',
+          'facebookUrl', 'facebookHandle', 'updatedAt'
+        ]) &&
+        data.heroTitleEn is string && data.heroTitleEn.size() >= 1 && data.heroTitleEn.size() <= 160 &&
+        data.heroTitleAr is string && data.heroTitleAr.size() >= 1 && data.heroTitleAr.size() <= 160 &&
+        data.whatsappNumber is string && data.whatsappNumber.size() >= 6 && data.whatsappNumber.size() <= 30 &&
+        data.phoneDisplay is string && data.phoneDisplay.size() >= 4 && data.phoneDisplay.size() <= 30 &&
+        isOptionalString(data, 'heroSubtitleEn', 320) &&
+        isOptionalString(data, 'heroSubtitleAr', 320) &&
+        isOptionalString(data, 'hoursEn', 80) &&
+        isOptionalString(data, 'hoursAr', 80) &&
+        isOptionalString(data, 'addressEn', 160) &&
+        isOptionalString(data, 'addressAr', 160) &&
+        isOptionalString(data, 'mapsEmbedUrl', 600) &&
+        isOptionalString(data, 'mapsLink', 600) &&
+        isOptionalString(data, 'facebookUrl', 300) &&
+        isOptionalString(data, 'facebookHandle', 80) &&
+        isOptionalString(data, 'updatedAt', 60) &&
+        isBoundedStringList(data, 'heroImages', 8);
+    }
+
+    function isValidAdminStatus(data) {
+      return data.keys().hasAll(['initialized']) &&
+        data.keys().hasOnly(['initialized', 'updatedAt']) &&
+        data.initialized is bool &&
+        isOptionalString(data, 'updatedAt', 60);
+    }
+
+    function isValidProduct(data) {
+      return data.keys().hasAll(['nameEn', 'nameAr', 'brand', 'category', 'priceUsd', 'condition', 'inStock']) &&
+        data.keys().hasOnly([
+          'nameEn', 'nameAr', 'brand', 'category', 'priceUsd', 'oldPriceUsd',
+          'condition', 'storageOptions', 'colorOptions', 'images', 'inStock',
+          'isNewArrival', 'isOnSale', 'gulfSpec', 'descriptionEn', 'descriptionAr',
+          'artworkKey', 'sortOrder', 'updatedAt'
+        ]) &&
+        data.nameEn is string && data.nameEn.size() >= 1 && data.nameEn.size() <= 140 &&
+        data.nameAr is string && data.nameAr.size() >= 1 && data.nameAr.size() <= 140 &&
+        data.brand in ['Samsung', 'iPhone', 'Huawei', 'Xiaomi', 'Other'] &&
+        data.category in ['phone', 'case', 'charger', 'cable', 'earbuds', 'screen_protector', 'accessory'] &&
+        data.priceUsd is number && data.priceUsd >= 0 && data.priceUsd <= 100000 &&
+        isOptionalNumber(data, 'oldPriceUsd') &&
+        data.condition in ['new', 'used'] &&
+        data.inStock is bool &&
+        isOptionalBool(data, 'isNewArrival') &&
+        isOptionalBool(data, 'isOnSale') &&
+        isOptionalBool(data, 'gulfSpec') &&
+        isOptionalString(data, 'descriptionEn', 800) &&
+        isOptionalString(data, 'descriptionAr', 800) &&
+        isOptionalString(data, 'artworkKey', 60) &&
+        isOptionalNumber(data, 'sortOrder') &&
+        isOptionalString(data, 'updatedAt', 60) &&
+        isBoundedStringList(data, 'storageOptions', 10) &&
+        isBoundedStringList(data, 'colorOptions', 10) &&
+        isBoundedStringList(data, 'images', 10);
+    }
+
+    function isValidService(data) {
+      return data.keys().hasAll(['titleEn', 'titleAr', 'descriptionEn', 'descriptionAr', 'icon', 'whatsappMessageEn', 'whatsappMessageAr']) &&
+        data.keys().hasOnly([
+          'titleEn', 'titleAr', 'descriptionEn', 'descriptionAr', 'icon',
+          'whatsappMessageEn', 'whatsappMessageAr', 'accent', 'sortOrder'
+        ]) &&
+        data.titleEn is string && data.titleEn.size() >= 1 && data.titleEn.size() <= 100 &&
+        data.titleAr is string && data.titleAr.size() >= 1 && data.titleAr.size() <= 100 &&
+        data.descriptionEn is string && data.descriptionEn.size() <= 240 &&
+        data.descriptionAr is string && data.descriptionAr.size() <= 240 &&
+        data.icon is string && data.icon.size() >= 1 && data.icon.size() <= 40 &&
+        data.whatsappMessageEn is string && data.whatsappMessageEn.size() <= 400 &&
+        data.whatsappMessageAr is string && data.whatsappMessageAr.size() <= 400 &&
+        (!('accent' in data) || data.accent in ['default', 'touch', 'alfa']) &&
+        isOptionalNumber(data, 'sortOrder');
+    }
+
+    function isValidTelecomPlan(data) {
+      return data.keys().hasAll(['carrier', 'type', 'titleEn', 'titleAr', 'priceUsd', 'inStock']) &&
+        data.keys().hasOnly([
+          'carrier', 'type', 'titleEn', 'titleAr', 'subtitleEn', 'subtitleAr',
+          'priceUsd', 'inStock', 'sortOrder'
+        ]) &&
+        data.carrier in ['touch', 'alfa'] &&
+        data.type in ['line', 'topup'] &&
+        data.titleEn is string && data.titleEn.size() >= 1 && data.titleEn.size() <= 120 &&
+        data.titleAr is string && data.titleAr.size() >= 1 && data.titleAr.size() <= 120 &&
+        isOptionalString(data, 'subtitleEn', 200) &&
+        isOptionalString(data, 'subtitleAr', 200) &&
+        data.priceUsd is number && data.priceUsd >= 0 && data.priceUsd <= 10000 &&
+        data.inStock is bool &&
+        isOptionalNumber(data, 'sortOrder');
+    }
+
+    function isValidRepair(data) {
+      return data.keys().hasAll(['titleEn', 'titleAr', 'descriptionEn', 'descriptionAr', 'icon']) &&
+        data.keys().hasOnly([
+          'titleEn', 'titleAr', 'descriptionEn', 'descriptionAr', 'icon',
+          'startingPriceEn', 'startingPriceAr', 'whatsappMessageEn', 'whatsappMessageAr', 'sortOrder'
+        ]) &&
+        data.titleEn is string && data.titleEn.size() >= 1 && data.titleEn.size() <= 100 &&
+        data.titleAr is string && data.titleAr.size() >= 1 && data.titleAr.size() <= 100 &&
+        data.descriptionEn is string && data.descriptionEn.size() <= 260 &&
+        data.descriptionAr is string && data.descriptionAr.size() <= 260 &&
+        data.icon is string && data.icon.size() >= 1 && data.icon.size() <= 40 &&
+        isOptionalString(data, 'startingPriceEn', 60) &&
+        isOptionalString(data, 'startingPriceAr', 60) &&
+        isOptionalString(data, 'whatsappMessageEn', 400) &&
+        isOptionalString(data, 'whatsappMessageAr', 400) &&
+        isOptionalNumber(data, 'sortOrder');
+    }
+
+    function isValidGalleryItem(data) {
+      return data.keys().hasAll(['titleEn', 'titleAr', 'tag']) &&
+        data.keys().hasOnly([
+          'titleEn', 'titleAr', 'captionEn', 'captionAr', 'imageUrl', 'artworkKey', 'tag', 'sortOrder'
+        ]) &&
+        data.titleEn is string && data.titleEn.size() >= 1 && data.titleEn.size() <= 100 &&
+        data.titleAr is string && data.titleAr.size() >= 1 && data.titleAr.size() <= 100 &&
+        isOptionalString(data, 'captionEn', 200) &&
+        isOptionalString(data, 'captionAr', 200) &&
+        isOptionalString(data, 'imageUrl', 600) &&
+        isOptionalString(data, 'artworkKey', 60) &&
+        data.tag in ['shop', 'repair', 'devices', 'accessories'] &&
+        isOptionalNumber(data, 'sortOrder');
+    }
+
+    match /shop_config/{configId} {
+      allow get, list: if true;
+      allow create, update: if isAdmin() && isValidId(configId) && isValidShopConfig(incoming());
+      allow delete: if isAdmin() && isValidId(configId);
+    }
+
+    match /app_meta/{metaId} {
+      allow get, list: if true;
+      allow create, update: if isAdmin() && isValidId(metaId) && isValidAdminStatus(incoming());
+      allow delete: if isAdmin() && isValidId(metaId);
+    }
+
+    match /products/{productId} {
+      allow get, list: if true;
+      allow create, update: if isAdmin() && isValidId(productId) && isValidProduct(incoming());
+      allow delete: if isAdmin() && isValidId(productId);
+    }
+
+    match /services/{serviceId} {
+      allow get, list: if true;
+      allow create, update: if isAdmin() && isValidId(serviceId) && isValidService(incoming());
+      allow delete: if isAdmin() && isValidId(serviceId);
+    }
+
+    match /telecom_plans/{planId} {
+      allow get, list: if true;
+      allow create, update: if isAdmin() && isValidId(planId) && isValidTelecomPlan(incoming());
+      allow delete: if isAdmin() && isValidId(planId);
+    }
+
+    match /repairs/{repairId} {
+      allow get, list: if true;
+      allow create, update: if isAdmin() && isValidId(repairId) && isValidRepair(incoming());
+      allow delete: if isAdmin() && isValidId(repairId);
+    }
+
+    match /gallery_items/{itemId} {
+      allow get, list: if true;
+      allow create, update: if isAdmin() && isValidId(itemId) && isValidGalleryItem(incoming());
+      allow delete: if isAdmin() && isValidId(itemId);
+    }
+  }
+}

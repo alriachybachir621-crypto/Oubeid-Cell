@@ -1,0 +1,6 @@
+{
+  "name": "Oubeid Cell",
+  "description": "Mobile phones, instant repair, accessories, and Touch & Alfa lines and recharge in Zahle, Lebanon. Always open.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
